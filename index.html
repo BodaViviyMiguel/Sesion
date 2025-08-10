@@ -144,10 +144,11 @@
             .then(response => response.json())
             .then(data => {
                 const gallery = document.getElementById("gallery");
-                data.images.forEach(imgPath => {
+                data.forEach(item => {
                     const img = document.createElement("img");
-                    img.src = imgPath;
-                    img.addEventListener("click", () => openModal(imgPath));
+                    img.src = item.thumb;
+                    img.alt = item.caption || '';
+                    img.addEventListener("click", () => openModal(item.file));
                     gallery.appendChild(img);
                 });
             });
