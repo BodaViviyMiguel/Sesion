@@ -1,180 +1,435 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesión de Fotos</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Boda Vivi & Miguel</title>
     <style>
+        :root {
+            --sand: #f4e2d7;
+            --sea: #027a9f;
+            --sea-deep: #014f66
+        }
+
         body {
-            font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
-            background-color: #f8f8f8;
-            color: #333;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+            background: linear-gradient(#e8f6fb, #f7fbff 36%, var(--sand) 36%);
+            color: #123
         }
 
+        /* header */
         header {
-            background-color: #222;
-            color: white;
-            padding: 10px;
+            padding: 22px 18px 14px;
             text-align: center;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.35), transparent)
         }
 
-        main {
-            padding: 20px;
-            max-width: 1000px;
-            margin: auto;
+        header h1 {
+            margin: 0;
+            color: var(--sea-deep);
+            font-size: 1.6rem
         }
 
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        header p {
+            margin: 6px 0 0;
+            color: #446
+        }
+
+        /* main container: reduced vertical spacing */
+        .container {
+            max-width: 1100px;
+            margin: 14px auto;
+            padding: 0 14px 26px
+        }
+
+        /* controls & intro (compact) */
+        .controls {
+            display: flex;
             gap: 10px;
+            justify-content: center;
+            margin: 6px 0 8px
         }
 
-        .gallery img {
-            width: 100%;
-            height: auto;
+        .btn {
+            background: var(--sea);
+            color: #fff;
+            padding: 9px 12px;
+            border-radius: 8px;
+            border: 0;
             cursor: pointer;
-            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600
         }
 
+        .intro {
+            color: #556;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 6px 0 8px;
+            line-height: 1.25
+        }
+
+        .intro .en {
+            display: block;
+            margin-top: 6px;
+            color: #5a7080;
+            font-size: 0.9rem
+        }
+
+        /* gallery grid (slightly tighter) */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 10px
+        }
+
+        .item {
+            border-radius: 10px;
+            overflow: hidden;
+            display: block;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+            background: #fff
+        }
+
+        .item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+            transition: transform .22s
+        }
+
+        .item:hover img {
+            transform: scale(1.03)
+        }
+
+        /* status message */
+        .status {
+            grid-column: 1/-1;
+            text-align: center;
+            color: #666;
+            padding: 8px;
+            font-size: 0.95rem
+        }
+
+        /* footer (reduced) */
         footer {
             text-align: center;
-            padding: 10px;
-            background-color: #222;
-            color: white;
-            margin-top: 20px;
+            color: #666;
+            padding: 14px 18px;
+            font-size: 0.95rem;
+            background: transparent
         }
 
-        .instructions {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .instructions p {
-            margin: 5px 0;
-        }
-
-        /* Modal para imagen ampliada */
-        .modal {
-            display: none;
+        /* lightbox (same as before) */
+        .lightbox {
             position: fixed;
-            z-index: 999;
-            padding-top: 50px;
-            left: 0;
-            top: 0;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.78);
+            z-index: 9999;
+            padding: 12px
+        }
+
+        .lightbox.open {
+            display: flex
+        }
+
+        .lb-inner {
+            max-width: 1100px;
             width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
+            max-height: 92vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px
         }
 
-        .modal-content {
-            display: block;
-            margin: auto;
-            max-width: 90%;
-            max-height: 80%;
-            border-radius: 8px;
+        .lb-img {
+            max-height: 78vh;
+            width: auto;
+            max-width: 100%;
+            border-radius: 6px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6)
         }
 
-        .close {
-            position: absolute;
-            top: 20px;
-            right: 35px;
-            color: white;
-            font-size: 40px;
-            font-weight: bold;
-            cursor: pointer;
+        .lb-caption {
+            color: #fff;
+            font-size: 14px;
+            text-align: center;
+            min-height: 1.1em
         }
 
-        .download-btn {
-            display: inline-block;
-            margin-top: 10px;
+        .lb-row {
+            display: flex;
+            gap: 10px;
+            align-items: center
+        }
+
+        .lb-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #fff;
             padding: 8px 12px;
-            background: #ffcc00;
-            color: black;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none
         }
 
-        .download-btn:hover {
-            background: #ffdb4d;
+        .close-btn {
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            background: transparent;
+            border: 0;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer
+        }
+
+        .nav-btn {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 30px;
+            color: #fff;
+            background: transparent;
+            border: 0;
+            cursor: pointer
+        }
+
+        .nav-left {
+            left: 6px
+        }
+
+        .nav-right {
+            right: 6px
+        }
+
+        @media(max-width:600px) {
+            .item img {
+                height: 120px
+            }
+
+            header h1 {
+                font-size: 1.25rem
+            }
+
+            .lb-img {
+                max-height: 60vh
+            }
         }
     </style>
 </head>
 
 <body>
-
-    <header>
+    <header class="container">
         <h1>Sesión de Fotos</h1>
     </header>
 
-    <main>
-        <div class="instructions">
-            <p>Haz clic en una foto para verla ampliada — desde ahí puedes descargarla individualmente.</p>
-            <p>Para descargar todas las fotos o para mejor calidad, descarga el <a
-                    href="https://drive.google.com/file/d/1Bteeigd9v4XVBXHAMXYrurVf2L9_8IJY/view?usp=sharing"
-                    target="_blank">zip con todas las fotos</a>.</p>
-            <p><em>Click on a photo to view it enlarged — from there you can download it individually.</em></p>
-            <p><em>To download all photos or for better quality, get the <a
-                        href="https://drive.google.com/file/d/1Bteeigd9v4XVBXHAMXYrurVf2L9_8IJY/view?usp=sharing"
-                        target="_blank">zip with all photos</a>.</em></p>
-        </div>
-
-        <div class="gallery" id="gallery"></div>
-    </main>
-
-    <!-- Modal para imagen ampliada -->
-    <div id="myModal" class="modal">
-        <span class="close">&times;</span>
-        <img class="modal-content" id="modalImage">
-        <div style="text-align:center;">
-            <a id="downloadLink" class="download-btn" download>⬇ Descargar esta foto</a>
-        </div>
+    <div class="intro">
+        Haz clic en una foto para verla ampliada — desde ahí puedes descargarla individualmente. Para descargar todas
+        las fotos o para mejor calidad, descarga el zip con todas las fotos.
+        <span class="en">Click a photo to view it large — you can download individual photos there. To download all
+            photos or for better quality, get the ZIP with all photos.</span>
     </div>
 
-    <footer>
-        <p>© Sesión de Fotos</p>
-    </footer>
+    <main class="container">
+        <div class="controls">
+            <!-- Link to Google Drive ZIP (direct download) -->
+            <a id="zipLink" class="btn"
+                href="https://drive.google.com/file/d/1Bteeigd9v4XVBXHAMXYrurVf2L9_8IJY/view?usp=sharing"
+                target="_blank" rel="noopener noreferrer">📥 Descargar ZIP (todas las fotos)</a>
+        </div>
+
+        <div id="gallery" class="grid" aria-live="polite">
+            <div id="status" class="status">Cargando galería…</div>
+        </div>
+    </main>
+
+    <footer> Sesion de fotos</footer>
+
+    <!-- Lightbox markup -->
+    <div id="lightbox" class="lightbox" aria-hidden="true">
+        <button class="close-btn" id="lbClose" aria-label="Cerrar">✕</button>
+        <button class="nav-btn nav-left" id="lbPrev" aria-label="Anterior">‹</button>
+        <div class="lb-inner" role="dialog" aria-modal="true">
+            <img id="lbImg" class="lb-img" src="" alt="">
+            <div class="lb-caption" id="lbCaption"></div>
+            <div class="lb-row">
+                <a id="lbDownload" class="lb-btn" href="#" download>⬇ Descargar foto</a>
+                <button id="lbOpenInNew" class="lb-btn" type="button">Abrir en pestaña nueva</button>
+            </div>
+        </div>
+        <button class="nav-btn nav-right" id="lbNext" aria-label="Siguiente">›</button>
+    </div>
 
     <script>
-        fetch("manifest.json")
-            .then(response => response.json())
-            .then(data => {
-                const gallery = document.getElementById("gallery");
-                data.forEach(item => {
-                    const img = document.createElement("img");
-                    img.src = item.thumb;
-                    img.alt = item.caption || '';
-                    img.addEventListener("click", () => openModal(item.file));
-                    gallery.appendChild(img);
+        (async function () {
+            const gallery = document.getElementById('gallery');
+            const status = document.getElementById('status');
+            const zipLink = document.getElementById('zipLink');
+
+            // lightbox elements
+            const lightbox = document.getElementById('lightbox');
+            const lbImg = document.getElementById('lbImg');
+            const lbCaption = document.getElementById('lbCaption');
+            const lbClose = document.getElementById('lbClose');
+            const lbPrev = document.getElementById('lbPrev');
+            const lbNext = document.getElementById('lbNext');
+            const lbDownload = document.getElementById('lbDownload');
+            const lbOpenInNew = document.getElementById('lbOpenInNew');
+
+            // load manifest.json
+            let manifest = [];
+            try {
+                const r = await fetch('manifest.json', { cache: 'no-store' });
+                if (!r.ok) throw new Error('manifest.json no encontrado');
+                manifest = await r.json();
+            } catch (e) {
+                status.textContent = 'No se ha encontrado manifest.json o está inválido. Comprueba que el archivo existe en la misma carpeta que index.html.';
+                console.warn(e);
+                return;
+            }
+            if (!manifest.length) {
+                status.textContent = 'manifest.json está vacío. Ejecuta el script para generarlo.';
+                return;
+            }
+
+            // candidate prefixes to try when locating files
+            const prefixes = ['', 'images/', 'site_assets/images/', 'imagenes/', 'images/full/', 'images/thumbs/', 'site_assets/imagenes/'];
+
+            async function exists(path) {
+                try {
+                    const r = await fetch(path, { method: 'HEAD' });
+                    if (r.ok) return true;
+                    // fallback to GET if HEAD not allowed
+                    const g = await fetch(path, { method: 'GET' });
+                    return g.ok;
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            function buildCandidates(original) {
+                const name = (original || '').split('/').pop();
+                const out = [];
+                for (const pref of prefixes) {
+                    out.push(pref + (original || '').replace(/^\/+/, ''));
+                }
+                for (const pref of prefixes) {
+                    out.push(pref + 'images/full/' + name);
+                    out.push(pref + 'images/thumbs/' + name);
+                    out.push(pref + 'imagenes/full/' + name);
+                    out.push(pref + 'imagenes/thumbs/' + name);
+                    out.push(pref + 'full/' + name);
+                    out.push(pref + 'thumbs/' + name);
+                    out.push(pref + name);
+                }
+                return Array.from(new Set(out));
+            }
+
+            async function findFirst(candidates) {
+                for (const p of candidates) {
+                    if (!p) continue;
+                    if (await exists(p)) return p;
+                }
+                return null;
+            }
+
+            // build gallery
+            gallery.innerHTML = '';
+            for (let i = 0; i < manifest.length; i++) {
+                const entry = manifest[i];
+                const fileOrig = entry.file || entry.filename || entry.src || '';
+                const thumbOrig = entry.thumb || entry.preview || fileOrig;
+
+                const thumbCandidates = buildCandidates(thumbOrig);
+                const fileCandidates = buildCandidates(fileOrig);
+
+                const [foundThumb, foundFile] = await Promise.all([findFirst(thumbCandidates), findFirst(fileCandidates)]);
+
+                if (!foundThumb && !foundFile) {
+                    console.warn('No encontrado:', entry);
+                    continue;
+                }
+                const imgSrc = foundThumb || foundFile;
+                const linkHref = foundFile || foundThumb;
+
+                const a = document.createElement('a');
+                a.className = 'item';
+                a.href = linkHref || '#';
+                a.dataset.index = i;
+                a.addEventListener('click', function (ev) {
+                    ev.preventDefault();
+                    openAtIndex(parseInt(this.dataset.index, 10));
                 });
+
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                img.alt = entry.caption || '';
+                a.appendChild(img);
+                gallery.appendChild(a);
+            }
+
+            if (gallery.children.length === 0) {
+                status.textContent = 'No se encontraron imágenes según manifest.json. Revisa rutas o muestra el manifest aquí.';
+                return;
+            } else {
+                status.remove();
+            }
+
+            // lightbox logic
+            let curIndex = 0;
+            function openAtIndex(i) {
+                if (i < 0) i = manifest.length - 1;
+                if (i >= manifest.length) i = 0;
+                curIndex = i;
+                const entry = manifest[curIndex];
+                findFirst(buildCandidates(entry.file || entry.filename || entry.src || '')).then((path) => {
+                    const filePath = path || (entry.file || entry.filename || entry.src || '');
+                    lbImg.src = filePath;
+                    lbDownload.href = filePath;
+                    const base = (filePath.split('/').pop() || 'photo');
+                    lbDownload.setAttribute('download', base);
+                    lbOpenInNew.onclick = () => window.open(filePath, '_blank');
+                });
+                lbCaption.textContent = entry.caption || '';
+                lightbox.classList.add('open');
+                lightbox.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeLightbox() {
+                lightbox.classList.remove('open');
+                lightbox.setAttribute('aria-hidden', 'true');
+                lbImg.src = '';
+                document.body.style.overflow = '';
+            }
+
+            function prev() { openAtIndex((curIndex - 1 + manifest.length) % manifest.length); }
+            function next() { openAtIndex((curIndex + 1) % manifest.length); }
+
+            lbClose.addEventListener('click', closeLightbox);
+            lbPrev.addEventListener('click', prev);
+            lbNext.addEventListener('click', next);
+
+            document.addEventListener('keydown', function (e) {
+                if (!lightbox.classList.contains('open')) return;
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowLeft') prev();
+                if (e.key === 'ArrowRight') next();
+            });
+            lightbox.addEventListener('click', function (ev) {
+                if (ev.target === lightbox) closeLightbox();
             });
 
-        function openModal(src) {
-            const modal = document.getElementById("myModal");
-            const modalImg = document.getElementById("modalImage");
-            const downloadLink = document.getElementById("downloadLink");
-
-            modal.style.display = "block";
-            modalImg.src = src;
-            downloadLink.href = src;
-        }
-
-        document.querySelector(".close").onclick = function () {
-            document.getElementById("myModal").style.display = "none";
-        }
-
-        window.onclick = function (event) {
-            const modal = document.getElementById("myModal");
-            if (event.target === modal) {
-                modal.style.display = "none";
-            }
-        }
+        })();
     </script>
-
 </body>
 
 </html>
